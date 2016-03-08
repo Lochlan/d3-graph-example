@@ -17,6 +17,10 @@
             stroke-width: 1;
             shape-rendering: crispEdges;
         }
+        .area {
+            fill: lightsteelblue;
+            stroke-width: 0;
+        }
     </style>
 </head>
 <body>
@@ -73,8 +77,15 @@
         var svg = chart.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        var area = d3.svg.area()
+            .interpolate("cardinal")
+            .x(function(d) { return x(d.date); })
+            .y0(height)
+            .y1(function(d) { return y(d.value); });
+
         // Define the line
         var valueline = d3.svg.line()
+            .interpolate("cardinal")
             .x(function (d) { return x(d.date); })
             .y(function (d) { return y(d.value); });
 
@@ -86,6 +97,11 @@
         // Scale the range of the data
         x.domain(d3.extent(data, function (d) { return d.date; }));
         y.domain([0, d3.max(data, function (d) { return d.value; })]);
+
+        svg.append("path")
+            .datum(data)
+            .attr("class", "area")
+            .attr("d", area);
 
         // Add the valueline path.
         svg.append("path")
